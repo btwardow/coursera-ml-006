@@ -17,11 +17,12 @@ for iter = 1:num_iters
     %       of the cost function (computeCost) and gradient here.
     %
 
-
-
-
-
-
+    
+    
+    predictions = X * theta;
+    theta_size = size(theta,1);
+    delta = (alpha/m) * ( ((predictions - y) * ones(1, theta_size))' * X)(1,:);
+    theta = theta - delta';
 
     % ============================================================
 
