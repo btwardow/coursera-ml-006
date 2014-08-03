@@ -68,12 +68,27 @@ a_2 = [ ones(m,1), sigmoid(z_2)];
 z_3 = a_2 * Theta2';
 a_3 = sigmoid(z_3);
 h = a_3;
-
-y_matrix = eye(10)(y,:);
-
-J = (1/m) * sum(sum( -1 * y_matrix .* log(h) - (1 - y_matrix) .* log( 1 - h)));
+y_matrix = eye(num_labels)(y,:);
+regularization = (lambda/(2*m)) * ( sum(sum( Theta1(:,[2:end]).^2)) + sum(sum(Theta2(:,[2:end]).^2)));
+J = (1/m) * sum(sum( -1 * y_matrix .* log(h) - (1 - y_matrix) .* log( 1 - h))) + regularization;
 
 % -------------------------------------------------------------
+
+% backpropagation
+for t = 1:m
+    
+    delta_3 = a_3(t,:)' - y_matrix(t,:)';
+
+    delta_2 = (Theta2' * delta_3) .* [1 ; sigmoidGradient(z_2(t,:)')];
+    delta_2 = delta_2(2:end);
+
+    Theta1_grad = Theta1_grad + delta_2*a_1(t,:);
+    Theta2_grad = Theta2_grad + delta_3*a_2(t,:);
+
+end
+
+Theta1_grad = Theta1_grad ./ m + (lambda/m) * [zeros(size(Theta1, 1), 1) Theta1(:,2:end)];
+Theta2_grad = Theta2_grad ./ m + (lambda/m) * [zeros(size(Theta2, 1), 1) Theta2(:,2:end)];
 
 % =========================================================================
 
