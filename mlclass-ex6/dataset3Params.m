@@ -23,11 +23,26 @@ sigma = 0.3;
 %        mean(double(predictions ~= yval))
 %
 
+C_eval = [ 0.01 0.03 0.1 0.3 1 3 10 30 ];
+sigma_eval = [ 0.01 0.03 0.1 0.3 1 3 10 30 ];
+min_error_rate = 1;
 
-
-
-
-
+for _C = C_eval
+    for _sigma = sigma_eval
+        fprintf('\nTrening SVN with C=%f and sigma=%f', _C, _sigma); 
+        model= svmTrain(X, y, _C, @(x1, x2) gaussianKernel(x1, x2, _sigma));
+        predictions = svmPredict(model, Xval);
+        error_rate = mean(double(predictions ~= yval));
+        fprintf('\nMin error rate: %f', min_error_rate);
+        fprintf('\nError rate on cross validation set: %f', error_rate);
+        if error_rate < min_error_rate
+            min_error_rate = error_rate;
+            C = _C;
+            sigma = _sigma;
+            fprintf('\nNew min error rate. Setting C = %f and sigma = %f', C, sigma);
+        endif
+    end
+end
 
 % =========================================================================
 
